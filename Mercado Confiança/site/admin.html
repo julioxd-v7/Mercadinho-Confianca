@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Painel ADM — Confiança Mercadinho</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="img/logo.webp">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#F5F7FB;font-family:Inter,system-ui,sans-serif;color:#1C1C1A}
+[x-cloak]{display:none!important}
+a{color:#003466}
+a,button,input,select,textarea{-webkit-tap-highlight-color:transparent}
+a,button{transition:background-color .2s ease,color .2s ease,border-color .2s ease,transform .15s ease,box-shadow .2s ease}
+button:active,a:active{transform:scale(.97)}
+input,select,textarea{transition:border-color .2s ease,box-shadow .2s ease}
+input:focus,select:focus,textarea:focus{outline:none;border-color:#003466;box-shadow:0 0 0 3px rgba(0,52,102,.15)}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+@keyframes toast{from{opacity:0;transform:translate(-50%,16px)}to{opacity:1;transform:translate(-50%,0)}}
+.view{animation:rise .4s cubic-bezier(.2,.8,.2,1)}
+.fade{animation:fadein .25s ease}
+.toast{animation:toast .3s cubic-bezier(.2,.8,.2,1)}
+.h1{margin:0;font-family:Archivo,sans-serif;font-weight:800;font-size:clamp(24px,3vw,30px)}
+.nav-btn{display:flex;align-items:center;gap:10px;width:100%;min-height:44px;padding:0 14px;border:0;border-radius:10px;background:transparent;color:#C9D6EE;font:inherit;font-size:14px;font-weight:500;text-align:left;cursor:pointer;white-space:nowrap}
+.nav-btn:hover{background:rgba(255,255,255,.08);color:#FFFFFF}
+.nav-btn.is-on{background:#F5C400;color:#1C1C1A;font-weight:700}
+.side-nav{display:flex;flex-direction:column;gap:4px}
+.fld{font:inherit;font-weight:400;height:44px;padding:0 12px;border:1px solid #C9D2E3;border-radius:10px;background:#FFFFFF;width:100%}
+.lbl{display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:600;color:#1C1C1A}
+.card{background:#FFFFFF;border:1px solid #DDE3EE;border-radius:16px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 20px;border:0;border-radius:999px;font:inherit;font-weight:600;cursor:pointer;text-decoration:none}
+.btn-blue{background:#003466;color:#FFFFFF}.btn-blue:hover{background:#0A1F4A}
+.btn-ghost{background:#FFFFFF;border:1px solid #C9D2E3;color:#1C1C1A;font-weight:500}
+.btn-sm{min-height:40px;padding:0 14px;font-size:13px}
+.tbl{width:100%;border-collapse:collapse;font-size:14px;min-width:720px}
+.tbl th{text-align:left;font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:#5B5A55;font-weight:600;padding:12px 14px;border-bottom:1px solid #DDE3EE;background:#F8FAFD}
+.tbl td{padding:12px 14px;border-bottom:1px solid #EEF1F7;vertical-align:middle}
+.tbl tbody tr{transition:background-color .2s}
+.tbl tbody tr:hover{background:#F8FAFD}
+.pill{display:inline-block;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:600}
+.st-ativa,.st-visivel{background:#E6F4EA;color:#14532D}.st-rascunho{background:#EEF1F7;color:#3D4A63}.st-encerrada,.st-oculto{background:#F1F1EE;color:#5B5A55}.st-vence{background:#FFF1D6;color:#7A4A0B}
+.stat{text-align:left;background:#FFFFFF;border:1px solid #DDE3EE;border-radius:16px;padding:20px;font:inherit;cursor:pointer}
+.stat:hover{box-shadow:0 10px 24px rgba(0,52,102,.1);transform:translateY(-2px)}
+.stat b{display:block;font-family:Archivo,sans-serif;font-weight:800;font-size:34px;color:#003466;margin-top:6px}
+.ban{height:120px;border-radius:12px;background-size:cover;background-position:center}
+.ban-loja{background-image:linear-gradient(90deg,rgba(0,40,82,.85),rgba(0,40,82,.1)),url(img/padaria.webp)}
+.ban-horti{background-image:linear-gradient(90deg,rgba(0,40,82,.85),rgba(0,40,82,.1)),url(img/hortifruti.webp)}
+.ban-acougue{background-image:linear-gradient(90deg,rgba(0,40,82,.85),rgba(0,40,82,.1)),url(img/acougue.webp)}
+.drop{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;min-height:150px;border:2px dashed #B8C3D9;border-radius:14px;background:#F8FAFD;color:#3D4A63;font-size:14px;text-align:center;padding:16px;cursor:pointer;transition:border-color .2s,background-color .2s}
+.drop:hover{border-color:#003466;background:#EEF3FB}
+.sr{position:absolute;width:1px;height:1px;opacity:0}
+.err{background:#FDECEA;color:#8A1C12;border-radius:10px;padding:10px 12px;font-size:14px}
+.proto{background:#FFF8E1;color:#7A4A0B;font-size:13px;padding:8px 14px;border-radius:10px}
+@media (max-width:860px){.side-nav{flex-direction:row;overflow-x:auto;padding-bottom:4px}.nav-btn{width:auto}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+button,.btn,a.btn{transition:transform .35s cubic-bezier(.34,1.56,.64,1),box-shadow .3s ease,background-color .2s ease,color .2s ease,border-color .2s ease}
+@media (hover:hover){button:hover:not(:disabled),a.btn:hover{transform:scale(1.04);box-shadow:0 6px 16px rgba(0,52,102,.14)}}
+button:focus-visible,a.btn:focus-visible{outline:none;box-shadow:0 0 0 4px rgba(245,196,0,.45)}
+button:active:not(:disabled),a.btn:active{transform:scale(.94);transition-duration:.08s}
+@media (prefers-reduced-motion:reduce){button,a.btn{transition:none;transform:none!important}}
+</style>
+<script>
+var NAV = [['overview','Visão geral'],['products','Produtos'],['promos','Promoções'],['banners','Banners da home'],['categories','Categorias'],['orders','Pedidos'],['settings','Configurações da loja']];
+var CATS = [['Hortifruti','Fresco todo dia'],['Açougue','Cortes na hora'],['Padaria','Pão quentinho às 6H e 16H'],['Mercearia','O básico da despensa'],['Bebidas','Geladas e prontas'],['Frios e Laticínios','Fatiados na hora'],['Limpeza','Casa em ordem'],['Higiene e Beleza','Cuidado diário'],['Pet','Para quem também é da família']];
+var STATUSES = ['Novo','Separando','Saiu para entrega','Pronto para retirada','Entregue','Cancelado'];
+var H = 3600000;
+function brl(n){ var s = (isFinite(n) ? n : 0).toFixed(2).split('.'); return s[0].replace(/\B(?=(\d{3})+(?!\d))/g, '.') + ',' + s[1]; }
+function num(s){ var v = parseFloat(String(s || '').replace(/\./g, '').replace(',', '.')); return isFinite(v) ? v : NaN; }
+function pad(n){ return (n < 10 ? '0' : '') + n; }
+function toLocal(ms){ var d = new Date(ms); return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes()); }
+function fmt(ms){ var d = new Date(ms); return pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + ' ' + pad(d.getHours()) + 'h' + pad(d.getMinutes()); }
+function norm(s){ return String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, ''); }
+
+function admin(){
+  var now = Date.now();
+  return {
+    NAV: NAV, CATS: CATS, STATUSES: STATUSES, brl: brl, fmt: fmt,
+    auth: sessionStorage.getItem('adm_demo') === '1', email: '', senha: '', loginErr: false, view: 'overview', toast: '', tt: null, pq: '',
+    products: [
+      { id: 1, name: 'Arroz Tipo 1 Urbano 5kg', cat: 'Mercearia', price: 32.90, unit: 'un', stock: '48', visible: true },
+      { id: 2, name: 'Café MARCA Tradicional 500g', cat: 'Mercearia', price: 24.90, unit: 'un', stock: '30', visible: true },
+      { id: 3, name: 'Picanha bovina', cat: 'Açougue', price: 89.90, unit: 'kg', stock: '', visible: true },
+      { id: 4, name: 'Banana prata', cat: 'Hortifruti', price: 6.99, unit: 'kg', stock: '', visible: true },
+      { id: 5, name: 'Cerveja MARCA lata 350ml', cat: 'Bebidas', price: 4.99, unit: 'un', stock: '240', visible: true },
+      { id: 6, name: 'Azeite MARCA 500ml', cat: 'Mercearia', price: 39.90, unit: 'un', stock: '0', visible: true },
+      { id: 7, name: 'Pão francês', cat: 'Padaria', price: 14.90, unit: 'kg', stock: '', visible: true },
+      { id: 8, name: 'Ração para cães MARCA 1kg', cat: 'Pet', price: 16.90, unit: 'un', stock: '0', visible: false }
+    ],
+    promos: [
+      { id: 1, prodId: 1, old: 32.90, price: 24.90, type: 'Oferta do Dia', until: now + 20 * H, status: 'Ativa', sel: false },
+      { id: 2, prodId: 2, old: 24.90, price: 18.90, type: 'Oferta do Dia', until: now + 40 * H, status: 'Ativa', sel: false },
+      { id: 3, prodId: 3, old: 89.90, price: 69.90, type: 'Encarte da Semana', until: now + 110 * H, status: 'Ativa', sel: false },
+      { id: 4, prodId: 4, old: 6.99, price: 4.49, type: 'Encarte da Semana', until: now + 110 * H, status: 'Ativa', sel: false },
+      { id: 5, prodId: 5, old: 4.99, price: 3.99, type: 'Leve X Pague Y', until: now + 70 * H, status: 'Rascunho', sel: false }
+    ],
+    orders: [
+      { id: 1042, client: 'Ana P.', items: 6, total: 197.49, mode: 'Entrega', status: 'Novo' },
+      { id: 1041, client: 'Carlos M.', items: 3, total: 58.30, mode: 'Retirada', status: 'Separando' },
+      { id: 1040, client: 'Joana R.', items: 12, total: 312.80, mode: 'Entrega', status: 'Saiu para entrega' },
+      { id: 1039, client: 'Pedro L.', items: 2, total: 29.80, mode: 'Retirada', status: 'Pronto para retirada' },
+      { id: 1038, client: 'Lúcia F.', items: 8, total: 144.10, mode: 'Entrega', status: 'Entregue' }
+    ],
+    banners: [
+      { cls: 'ban-loja', alt: 'Foto da padaria', tag: 'ENCARTE DA SEMANA', title: 'Preço baixo de verdade, perto da sua casa.', sub: 'Centenas de produtos com desconto até DOMINGO. Peça agora e receba hoje.', btn: 'Ver ofertas', href: '#ofertas', order: '1', from: '', to: '' },
+      { cls: 'ban-horti', alt: 'Foto do hortifruti', tag: 'CHEGOU HOJE', title: 'Hortifruti fresquinho toda manhã.', sub: 'Frutas, verduras e legumes escolhidos a dedo. Terça e quarta com preço de feira.', btn: 'Ver hortifruti', href: '#encarte', order: '2', from: '', to: '' },
+      { cls: 'ban-acougue', alt: 'Foto do açougue', tag: 'FIM DE SEMANA', title: 'Churrasco garantido sem pesar no bolso.', sub: 'Cortes selecionados, carvão e bebida gelada no mesmo pedido.', btn: 'Montar meu churrasco', href: '#encarte', order: '3', from: '', to: '' }
+    ],
+    cfg: { name: 'Confiança Mercadinho', wa: '(81) 98894-9059', addr: 'Rua Felipe kk, 69, Maranguape II, Paulista', hWeek: '7H–21H', hSun: '7H–13H', fee: 'X', free: '50,00', areas: 'Maranguape II, OUTROS BAIRROS' },
+    pf: null, pfErr: '', pr: null, prErrs: [], promoSuccess: false, confirmEnd: false, alertDismissed: false,
+
+    say(t){ var s = this; clearTimeout(this.tt); this.toast = t; this.tt = setTimeout(function(){ s.toast = ''; }, 2600); },
+    go(v){ this.view = v; this.promoSuccess = false; this.confirmEnd = false; window.scrollTo({ top: 0, behavior: 'smooth' }); },
+    doLogin(){ if (this.email.indexOf('@') > 0 && this.senha.length >= 4) { this.auth = true; this.senha = ''; sessionStorage.setItem('adm_demo', '1'); } else this.loginErr = true; },
+    logout(){ this.auth = false; this.view = 'overview'; sessionStorage.removeItem('adm_demo'); },
+    prod(id){ return this.products.find(function(p){ return p.id === Number(id); }); },
+    get greeting(){ var h = new Date().getHours(); return h < 12 ? 'Bom dia' : h < 18 ? 'Boa tarde' : 'Boa noite'; },
+    get active(){ var n = Date.now(); return this.promos.filter(function(p){ return p.status === 'Ativa' && p.until > n; }); },
+    get expiring(){ var n = Date.now(); return this.active.filter(function(p){ return p.until - n <= 48 * H; }); },
+    get soon(){ var n = Date.now(); return this.active.filter(function(p){ return p.until - n <= 24 * H; })[0]; },
+    get openOrders(){ return this.orders.filter(function(o){ return o.status !== 'Entregue' && o.status !== 'Cancelado'; }).length; },
+    get soldout(){ return this.products.filter(function(p){ return p.stock === '0'; }).length; },
+    extendSoon(){ var s = this.soon; if (s) { s.until += 7 * 24 * H; this.say('Promoção estendida por 7 dias'); } },
+
+    get productRows(){ var qn = norm(this.pq.trim()); return this.products.filter(function(p){ return !qn || norm(p.name).indexOf(qn) >= 0; }); },
+    stockTxt(p){ return p.stock === '' ? 'Não controla' : p.stock === '0' ? 'Esgotado' : p.stock; },
+    newProduct(){ this.pf = { id: 0, name: '', cat: '', price: '', unit: 'un', stock: '', status: 'Visível no site', file: '' }; this.pfErr = ''; },
+    editProduct(p){ this.pf = { id: p.id, name: p.name, cat: p.cat, price: brl(p.price), unit: p.unit, stock: p.stock, status: p.visible ? 'Visível no site' : 'Oculto', file: '' }; this.pfErr = ''; window.scrollTo({ top: 0, behavior: 'smooth' }); },
+    saveProduct(){
+      var f = this.pf, price = num(f.price);
+      if (!f.name.trim()) return this.pfErr = 'Preencha o nome do produto.';
+      if (!f.cat) return this.pfErr = 'Selecione uma categoria.';
+      if (!(price > 0)) return this.pfErr = 'Informe um preço válido. Ex.: 12,90';
+      var item = { id: f.id || Date.now(), name: f.name.trim(), cat: f.cat, price: price, unit: f.unit, stock: f.stock, visible: f.status === 'Visível no site' };
+      this.products = f.id ? this.products.map(function(p){ return p.id === f.id ? item : p; }) : [item].concat(this.products);
+      this.pf = null; this.pfErr = ''; this.say('Produto salvo');
+    },
+
+    newPromo(){ this.pr = { prodId: '', old: '', price: '', type: 'Oferta do Dia', tag: '', from: toLocal(Date.now()), to: toLocal(Date.now() + 7 * 24 * H), limit: '', home: true }; this.prErrs = []; this.promoSuccess = false; },
+    pickPromoProd(){ var p = this.prod(this.pr.prodId); this.pr.old = p ? brl(p.price) : ''; },
+    get prCalc(){
+      var pr = this.pr; if (!pr) return {};
+      var o = num(pr.old), pz = num(pr.price), ok = o > 0 && pz > 0 && pz < o, p = this.prod(pr.prodId);
+      return { name: p ? p.name : 'Escolha um produto', old: o > 0 ? brl(o) : '0,00', price: pz > 0 ? brl(pz) : '0,00',
+        off: ok ? Math.round((1 - pz / o) * 100) : 0, save: ok ? brl(o - pz) : '0,00',
+        text: ok ? 'Desconto de ' + Math.round((1 - pz / o) * 100) + '% — o cliente economiza R$ ' + brl(o - pz) : 'Preencha os preços para ver o desconto.' };
+    },
+    savePromo(status){
+      var pr = this.pr, o = num(pr.old), pz = num(pr.price), errs = [];
+      var from = new Date(pr.from).getTime(), to = new Date(pr.to).getTime();
+      if (!pr.prodId) errs.push('Escolha o produto da promoção.');
+      if (!(pz > 0) || !(o > 0) || pz >= o) errs.push('O preço promocional precisa ser menor que o preço anterior.');
+      if (!(to > from)) errs.push('A data final precisa ser depois da data inicial.');
+      if (errs.length) { this.prErrs = errs; return; }
+      this.promos = [{ id: Date.now(), prodId: Number(pr.prodId), old: o, price: pz, type: pr.type, until: to, status: status, sel: false }].concat(this.promos);
+      this.pr = null; this.prErrs = []; this.promoSuccess = status === 'Ativa';
+      if (status !== 'Ativa') this.say('Rascunho salvo');
+    },
+    promoState(p){
+      var n = Date.now(), ended = p.status === 'Encerrada' || p.until <= n, vence = !ended && p.status === 'Ativa' && p.until - n <= 48 * H;
+      return { txt: ended ? 'Encerrada' : vence ? 'Vence em breve' : p.status, cls: 'pill ' + (ended ? 'st-encerrada' : vence ? 'st-vence' : p.status === 'Rascunho' ? 'st-rascunho' : 'st-ativa') };
+    },
+    get selCount(){ return this.promos.filter(function(p){ return p.sel; }).length; },
+    selectAll(){ var all = this.promos.every(function(p){ return p.sel; }); this.promos.forEach(function(p){ p.sel = !all; }); },
+    askEnd(){ if (this.selCount) this.confirmEnd = true; else this.say('Selecione pelo menos uma promoção'); },
+    doEnd(){ this.promos.forEach(function(p){ if (p.sel) { p.status = 'Encerrada'; p.sel = false; } }); this.confirmEnd = false; this.say('Promoções encerradas'); },
+    duplicate(){ var base = Date.now(); var copies = this.promos.filter(function(p){ return p.type === 'Encarte da Semana'; }).map(function(p, i){ return Object.assign({}, p, { id: base + i, status: 'Rascunho', sel: false, until: base + 7 * 24 * H }); }); this.promos = copies.concat(this.promos); this.say(copies.length + ' ofertas duplicadas como rascunho'); },
+    catCount(name){ return this.products.filter(function(p){ return p.cat === name; }).length; },
+    waOrder(o){ return 'https://wa.me/?text=' + encodeURIComponent('Olá, ' + o.client.split(' ')[0] + '! Aqui é do Confiança Mercadinho. Seu pedido #' + o.id + ' está: *' + o.status + '*.'); }
+  };
+}
+</script>
+<script defer src="vendor/alpine.min.js"></script>
+</head>
+<body x-data="admin()">
+
+<template x-if="!auth">
+<div class="fade" style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:#003466">
+<form @submit.prevent="doLogin()" style="width:100%;max-width:400px;background:#FFFFFF;border-radius:20px;padding:36px;display:flex;flex-direction:column;gap:16px;box-shadow:0 24px 60px rgba(0,0,0,.25)">
+<div style="display:flex;align-items:center;gap:12px"><img src="img/logo.webp" alt="Mascote do Confiança Mercadinho" width="52" height="52" style="border-radius:50%;box-shadow:0 0 0 3px #F5C400"><span style="font-family:Archivo,sans-serif;font-weight:800;font-size:20px;color:#003466;line-height:1.1">Painel do Confiança Mercadinho</span></div>
+<div class="proto">Protótipo: use qualquer e-mail e uma senha com 4 ou mais caracteres.</div>
+<label class="lbl">E-mail<input class="fld" type="email" autocomplete="username" x-model="email" @input="loginErr = false"></label>
+<label class="lbl">Senha<input class="fld" type="password" autocomplete="current-password" x-model="senha" @input="loginErr = false"></label>
+<template x-if="loginErr"><div class="err fade" role="alert">E-mail ou senha incorretos. Tente de novo.</div></template>
+<button type="submit" class="btn btn-blue" style="min-height:48px;font-weight:700;font-size:15px">Entrar</button>
+<a href="index.html" style="text-align:center;font-size:14px">← Voltar para a loja</a>
+</form>
+</div>
+</template>
+
+<template x-if="auth">
+<div style="display:flex;flex-wrap:wrap;min-height:100vh">
+<aside style="flex:1 1 240px;max-width:100%;background:#003466;color:#FFFFFF;padding:20px 16px;display:flex;flex-direction:column;gap:18px">
+<div style="display:flex;align-items:center;gap:10px;padding:0 6px"><img src="img/logo.webp" alt="" width="40" height="40" style="border-radius:50%;box-shadow:0 0 0 2px #F5C400"><span style="display:flex;flex-direction:column;line-height:1.05"><span style="font-family:Archivo,sans-serif;font-weight:800;font-size:17px">CONFIANÇA</span><span style="font-size:12px;color:#C9D6EE">Painel ADM</span></span></div>
+<nav aria-label="Menu do painel" class="side-nav">
+<template x-for="n in NAV" :key="n[0]"><button class="nav-btn" :class="view === n[0] && 'is-on'" :aria-current="view === n[0] ? 'page' : 'false'" @click="go(n[0])" x-text="n[1]"></button></template>
+</nav>
+<div style="margin-top:auto;display:flex;flex-direction:column;gap:8px">
+<a href="index.html" target="_blank" style="color:#C9D6EE;font-size:14px;padding:0 6px">Ver a loja ↗</a>
+<button @click="logout()" style="min-height:44px;border:1px solid rgba(255,255,255,.25);border-radius:10px;background:transparent;color:#C9D6EE;font:inherit;font-size:14px;cursor:pointer">Sair</button>
+</div>
+</aside>
+
+<main style="flex:999 1 640px;min-width:0;padding:28px clamp(16px,3vw,40px) 64px">
+<div class="proto" style="margin-bottom:18px">Protótipo de demonstração: as alterações não são salvas e somem ao recarregar a página.</div>
+
+<template x-if="view === 'overview'">
+<div class="view" style="display:flex;flex-direction:column;gap:22px">
+<div><h1 class="h1" x-text="greeting + ', NOME!'"></h1><p style="margin:6px 0 0;color:#5B5A55">Veja como está a loja hoje.</p></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px">
+<button class="stat" @click="go('orders')"><span style="font-size:13px;color:#5B5A55;font-weight:600">Pedidos hoje</span><b x-text="openOrders"></b></button>
+<button class="stat" @click="go('promos')"><span style="font-size:13px;color:#5B5A55;font-weight:600">Promoções ativas</span><b x-text="active.length"></b></button>
+<button class="stat" @click="go('promos')" style="background:#FFF8E1;border-color:#F3DC8A"><span style="font-size:13px;color:#7A4A0B;font-weight:600">Promoções que vencem em 48h</span><b style="color:#7A4A0B" x-text="expiring.length"></b></button>
+<button class="stat" @click="go('products')"><span style="font-size:13px;color:#5B5A55;font-weight:600">Produtos esgotados</span><b style="color:#B42318" x-text="soldout"></b></button>
+</div>
+<template x-if="soon && !alertDismissed">
+<div class="card fade" style="border-color:#F3DC8A;padding:18px 20px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between">
+<div><div style="font-weight:600">Esta promoção termina em 24h. Quer estender?</div><div style="font-size:14px;color:#5B5A55;margin-top:2px" x-text="(prod(soon.prodId) || {}).name + ' · R$ ' + brl(soon.price)"></div></div>
+<div style="display:flex;gap:8px"><button class="btn btn-blue" @click="extendSoon()">Estender 7 dias</button><button class="btn btn-ghost" @click="alertDismissed = true">Agora não</button></div>
+</div>
+</template>
+<div class="card" style="overflow:hidden">
+<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 20px"><h2 style="margin:0;font-size:17px">Pedidos recentes</h2><button @click="go('orders')" style="border:0;background:transparent;color:#003466;font:inherit;font-weight:600;cursor:pointer;min-height:44px">Ver todos →</button></div>
+<div style="overflow-x:auto"><table class="tbl"><thead><tr><th>Pedido</th><th>Cliente</th><th>Total</th><th>Tipo</th><th>Status</th></tr></thead><tbody>
+<template x-for="o in orders.slice(0, 3)" :key="o.id"><tr><td style="font-weight:600" x-text="'#' + o.id"></td><td x-text="o.client"></td><td x-text="'R$ ' + brl(o.total)"></td><td x-text="o.mode"></td><td><span class="pill st-rascunho" x-text="o.status"></span></td></tr></template>
+</tbody></table></div>
+</div>
+</div>
+</template>
+
+<template x-if="view === 'products'">
+<div class="view" style="display:flex;flex-direction:column;gap:18px">
+<div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px"><h1 class="h1">Produtos</h1><button class="btn btn-blue" @click="newProduct()">+ Novo produto</button></div>
+<template x-if="pf">
+<div class="card fade" style="padding:22px;display:flex;flex-direction:column;gap:16px">
+<h2 style="margin:0;font-size:20px" x-text="pf.id ? 'Editar produto' : 'Novo produto'"></h2>
+<div style="display:flex;flex-wrap:wrap;gap:20px">
+<label class="drop" style="flex:1 1 220px">
+<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#003466" stroke-width="1.8" aria-hidden="true"><path d="M4 16l4-4 4 4 3-3 5 5"></path><rect x="3" y="4" width="18" height="16" rx="2"></rect><circle cx="9" cy="9" r="1.6"></circle></svg>
+<strong>Foto do produto</strong>
+<span>Arraste a imagem ou clique para enviar. JPG ou PNG, fundo branco de preferência, mín. 800×800px.</span>
+<span style="font-weight:600;color:#003466" x-text="pf.file"></span>
+<input class="sr" type="file" accept="image/png,image/jpeg" @change="pf.file = $event.target.files[0] ? $event.target.files[0].name : ''">
+</label>
+<div style="flex:999 1 380px;display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px">
+<label class="lbl" style="grid-column:1/-1">Nome do produto<input class="fld" type="text" placeholder="Ex.: Café MARCA Tradicional 500g" x-model="pf.name"></label>
+<label class="lbl">Categoria<select class="fld" x-model="pf.cat"><option value="">Selecione</option><template x-for="c in CATS" :key="c[0]"><option :value="c[0]" x-text="c[0]"></option></template></select></label>
+<label class="lbl">Preço normal (R$)<input class="fld" type="text" inputmode="decimal" placeholder="0,00" x-model="pf.price"></label>
+<label class="lbl">Unidade<select class="fld" x-model="pf.unit"><option value="un">un.</option><option value="kg">kg</option><option value="pct">pct</option><option value="cx">cx</option><option value="L">L</option></select></label>
+<label class="lbl">Estoque<input class="fld" type="text" inputmode="numeric" placeholder="Deixe em branco para não controlar" x-model="pf.stock"></label>
+<label class="lbl">Status<select class="fld" x-model="pf.status"><option>Visível no site</option><option>Oculto</option></select></label>
+</div>
+</div>
+<template x-if="pfErr"><div class="err" role="alert" x-text="pfErr"></div></template>
+<div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn btn-blue" @click="saveProduct()">Salvar produto</button><button class="btn btn-ghost" @click="pf = null; pfErr = ''">Cancelar</button></div>
+</div>
+</template>
+<label class="card" style="display:flex;align-items:center;gap:10px;border-radius:999px;padding:0 16px;height:46px;max-width:420px">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#5B5A55" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><path d="M20 20l-3.5-3.5"></path></svg>
+<input type="search" aria-label="Buscar produto" placeholder="Buscar produto" x-model="pq" style="flex:1;border:0;background:transparent;font:inherit;box-shadow:none;min-width:0">
+</label>
+<div class="card" style="overflow-x:auto">
+<table class="tbl"><thead><tr><th>Produto</th><th>Categoria</th><th>Preço</th><th>Estoque</th><th>Status</th><th></th></tr></thead><tbody>
+<template x-for="p in productRows" :key="p.id"><tr>
+<td style="font-weight:500" x-text="p.name"></td><td x-text="p.cat"></td><td><span x-text="'R$ ' + brl(p.price)"></span> <span style="color:#5B5A55;font-size:12px" x-text="'/' + p.unit"></span></td><td x-text="stockTxt(p)"></td>
+<td><span class="pill" :class="p.visible ? 'st-visivel' : 'st-oculto'" x-text="p.visible ? 'Visível' : 'Oculto'"></span></td>
+<td style="text-align:right;white-space:nowrap"><button class="btn btn-ghost btn-sm" @click="editProduct(p)">Editar</button></td>
+</tr></template>
+</tbody></table>
+</div>
+</div>
+</template>
+
+<template x-if="view === 'promos'">
+<div class="view" style="display:flex;flex-direction:column;gap:18px">
+<div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px"><h1 class="h1">Promoções</h1><button class="btn btn-blue" @click="newPromo()">+ Criar promoção</button></div>
+<template x-if="promoSuccess"><div class="fade" role="status" style="background:#E6F4EA;color:#14532D;border-radius:12px;padding:12px 16px;font-weight:600">✓ Promoção publicada! Já está aparecendo no site.</div></template>
+<template x-if="pr">
+<div class="card fade" style="padding:22px;display:flex;flex-wrap:wrap;gap:24px">
+<div style="flex:999 1 420px;display:flex;flex-direction:column;gap:14px">
+<h2 style="margin:0;font-size:20px">Criar promoção</h2>
+<label class="lbl">Produto<select class="fld" x-model="pr.prodId" @change="pickPromoProd()"><option value="">Busque pelo nome</option><template x-for="p in products" :key="p.id"><option :value="String(p.id)" x-text="p.name"></option></template></select></label>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px">
+<label class="lbl">Preço anterior (riscado)<input class="fld" type="text" inputmode="decimal" x-model="pr.old"></label>
+<label class="lbl">Preço promocional (R$)<input class="fld" type="text" inputmode="decimal" placeholder="0,00" x-model="pr.price"></label>
+</div>
+<div style="background:#F5F7FB;border-radius:10px;padding:10px 12px;font-size:14px;color:#003466;font-weight:600" x-text="prCalc.text"></div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px">
+<label class="lbl">Tipo<select class="fld" x-model="pr.type"><option>Oferta do Dia</option><option>Encarte da Semana</option><option>Combo</option><option>Leve X Pague Y</option></select></label>
+<label class="lbl">Selo (opcional)<select class="fld" x-model="pr.tag"><option value="">Sem selo</option><option>Últimas unidades</option><option>Limite por cliente</option><option>Novidade</option></select></label>
+<label class="lbl">Válida de<input class="fld" type="datetime-local" x-model="pr.from"></label>
+<label class="lbl">Válida até<input class="fld" type="datetime-local" x-model="pr.to"></label>
+<label class="lbl">Limite por cliente (opcional)<input class="fld" type="text" inputmode="numeric" placeholder="Ex.: 3" x-model="pr.limit"></label>
+<label style="display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;min-height:44px;align-self:end"><input type="checkbox" x-model="pr.home" style="width:20px;height:20px"> Destacar na home</label>
+</div>
+<template x-if="prErrs.length"><ul class="err" role="alert" style="margin:0;padding-left:30px;line-height:1.6"><template x-for="e in prErrs" :key="e"><li x-text="e"></li></template></ul></template>
+<div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn btn-blue" @click="savePromo('Ativa')">Publicar promoção</button><button class="btn btn-ghost" @click="savePromo('Rascunho')">Salvar como rascunho</button><button @click="pr = null; prErrs = []" style="min-height:44px;padding:0 14px;border:0;background:transparent;color:#5B5A55;font:inherit;cursor:pointer">Cancelar</button></div>
+</div>
+<div style="flex:1 1 220px;max-width:260px">
+<div style="font-size:12px;letter-spacing:.04em;text-transform:uppercase;color:#5B5A55;font-weight:600;margin-bottom:8px">Prévia no site</div>
+<article class="card" style="padding:14px;display:flex;flex-direction:column;gap:8px;position:relative;box-shadow:0 10px 28px rgba(0,52,102,.1)">
+<span style="position:absolute;top:12px;left:12px;background:#C2410C;color:#FFFFFF;font-weight:700;font-size:13px;padding:4px 9px;border-radius:6px" x-text="'-' + prCalc.off + '%'"></span>
+<template x-if="pr.tag"><span style="position:absolute;top:12px;right:12px;background:#F5C400;color:#1C1C1A;font-weight:700;font-size:10px;letter-spacing:.04em;padding:4px 7px;border-radius:6px" x-text="pr.tag.toUpperCase()"></span></template>
+<div style="height:130px;border-radius:12px;background:#EAF0FA;color:#003466;display:flex;align-items:center;justify-content:center"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8z"></path><path d="M9 8V6a3 3 0 0 1 6 0v2"></path></svg></div>
+<div style="font-size:15px;font-weight:500;line-height:1.35;min-height:40px" x-text="prCalc.name"></div>
+<div style="font-size:14px;color:#6B6962;text-decoration:line-through" x-text="'R$ ' + prCalc.old"></div>
+<div style="font-family:Archivo,sans-serif;font-weight:800;font-size:26px;color:#003466" x-text="'R$ ' + prCalc.price"></div>
+<div style="font-size:13px;color:#003466;font-weight:600" x-text="'Você economiza R$ ' + prCalc.save"></div>
+<div style="height:44px;border-radius:10px;background:#003466;color:#FFFFFF;font-weight:600;display:flex;align-items:center;justify-content:center">Adicionar</div>
+</article>
+</div>
+</div>
+</template>
+<div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">
+<button class="btn btn-ghost btn-sm" @click="selectAll()">Selecionar todos</button>
+<button class="btn btn-ghost btn-sm" style="border-color:#F1B8B0;color:#8A1C12" @click="askEnd()">Encerrar promoções selecionadas</button>
+<button class="btn btn-ghost btn-sm" @click="duplicate()">Duplicar encarte da semana passada</button>
+<label class="btn btn-ghost btn-sm" style="position:relative">Importar planilha de preços<input class="sr" type="file" accept=".csv,.xlsx" @change="$event.target.files[0] && say('Planilha &quot;' + $event.target.files[0].name + '&quot; recebida')"></label>
+</div>
+<template x-if="confirmEnd">
+<div class="card fade" role="alertdialog" aria-label="Confirmar encerramento" style="border-color:#F1B8B0;border-radius:14px;padding:16px 18px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between">
+<div style="font-weight:600"><span x-text="'Encerrar ' + selCount + ' promoções?'"></span> <span style="font-weight:400;color:#5B5A55">Os produtos voltam ao preço normal no site.</span></div>
+<div style="display:flex;gap:8px"><button class="btn" style="background:#B42318;color:#FFFFFF" @click="doEnd()">Encerrar</button><button class="btn btn-ghost" @click="confirmEnd = false">Cancelar</button></div>
+</div>
+</template>
+<div class="card" style="overflow-x:auto">
+<table class="tbl"><thead><tr><th style="width:40px">Sel.</th><th>Produto</th><th>De</th><th>Por</th><th>Desconto</th><th>Tipo</th><th>Válida até</th><th>Status</th></tr></thead><tbody>
+<template x-for="p in promos" :key="p.id"><tr>
+<td><input type="checkbox" aria-label="Selecionar promoção" x-model="p.sel" style="width:18px;height:18px"></td>
+<td style="font-weight:500" x-text="(prod(p.prodId) || {}).name"></td><td style="color:#6B6962;text-decoration:line-through" x-text="'R$ ' + brl(p.old)"></td><td style="font-weight:700;color:#003466" x-text="'R$ ' + brl(p.price)"></td>
+<td x-text="'-' + Math.round((1 - p.price / p.old) * 100) + '%'"></td><td x-text="p.type"></td><td x-text="fmt(p.until)"></td>
+<td><span :class="promoState(p).cls" x-text="promoState(p).txt"></span></td>
+</tr></template>
+</tbody></table>
+</div>
+</div>
+</template>
+
+<template x-if="view === 'banners'">
+<div class="view" style="display:flex;flex-direction:column;gap:18px">
+<h1 class="h1">Banners da home</h1>
+<p class="card" style="margin:0;color:#5B5A55;border-radius:12px;padding:12px 16px">Use pouco texto na imagem. O título e o botão são inseridos pelo sistema. Imagem: desktop 1920×600 · celular 800×800.</p>
+<template x-for="(b, i) in banners" :key="i">
+<div class="card" style="padding:18px;display:flex;flex-wrap:wrap;gap:18px">
+<div style="flex:1 1 240px;display:flex;flex-direction:column;gap:8px">
+<div class="ban" :class="b.cls" role="img" :aria-label="b.alt"></div>
+<label class="drop" style="min-height:60px">Trocar imagem<input class="sr" type="file" accept="image/png,image/jpeg,image/webp"></label>
+</div>
+<div style="flex:999 1 420px;display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px">
+<label class="lbl">Selo<input class="fld" type="text" x-model="b.tag"></label>
+<label class="lbl" style="grid-column:span 2">Título<input class="fld" type="text" x-model="b.title"></label>
+<label class="lbl" style="grid-column:1/-1">Subtítulo<input class="fld" type="text" x-model="b.sub"></label>
+<label class="lbl">Texto do botão<input class="fld" type="text" x-model="b.btn"></label>
+<label class="lbl">Link<input class="fld" type="text" x-model="b.href"></label>
+<label class="lbl">Ordem<input class="fld" type="text" inputmode="numeric" x-model="b.order"></label>
+<label class="lbl">Exibir de<input class="fld" type="date" x-model="b.from"></label>
+<label class="lbl">Exibir até<input class="fld" type="date" x-model="b.to"></label>
+</div>
+</div>
+</template>
+<div><button class="btn btn-blue" @click="say('Banners salvos')">Salvar banners</button></div>
+</div>
+</template>
+
+<template x-if="view === 'categories'">
+<div class="view" style="display:flex;flex-direction:column;gap:18px">
+<h1 class="h1">Categorias</h1>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px">
+<template x-for="c in CATS" :key="c[0]">
+<div class="card" style="border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:4px">
+<div style="font-family:Archivo,sans-serif;font-weight:700;font-size:17px;color:#003466" x-text="c[0]"></div>
+<div style="font-size:14px;color:#5B5A55" x-text="c[1]"></div>
+<div style="font-size:13px;color:#5B5A55;margin-top:6px" x-text="catCount(c[0]) + ' produtos cadastrados'"></div>
+</div>
+</template>
+</div>
+</div>
+</template>
+
+<template x-if="view === 'orders'">
+<div class="view" style="display:flex;flex-direction:column;gap:18px">
+<h1 class="h1">Pedidos</h1>
+<p style="margin:0;color:#5B5A55">Os pedidos chegam pelo WhatsApp. Registre aqui e acompanhe o status de cada um.</p>
+<div class="card" style="overflow-x:auto">
+<table class="tbl" style="min-width:860px"><thead><tr><th>Pedido</th><th>Cliente</th><th>Itens</th><th>Total</th><th>Tipo</th><th>Status</th><th></th></tr></thead><tbody>
+<template x-for="o in orders" :key="o.id"><tr>
+<td style="font-weight:600" x-text="'#' + o.id"></td><td x-text="o.client"></td><td x-text="o.items"></td><td x-text="'R$ ' + brl(o.total)"></td><td x-text="o.mode"></td>
+<td><select class="fld" aria-label="Status do pedido" x-model="o.status" @change="say('Status atualizado')" style="height:40px;min-width:190px"><template x-for="s in STATUSES" :key="s"><option :value="s" x-text="s" :selected="s === o.status"></option></template></select></td>
+<td style="white-space:nowrap"><a :href="waOrder(o)" target="_blank" rel="noopener" class="btn btn-sm" style="background:#15803D;color:#FFFFFF">Avisar cliente no WhatsApp</a></td>
+</tr></template>
+</tbody></table>
+</div>
+</div>
+</template>
+
+<template x-if="view === 'settings'">
+<div class="view" style="display:flex;flex-direction:column;gap:18px;max-width:820px">
+<h1 class="h1">Configurações da loja</h1>
+<div class="card" style="padding:22px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px">
+<label class="lbl">Nome da loja<input class="fld" type="text" x-model="cfg.name"></label>
+<label class="lbl">WhatsApp da loja<input class="fld" type="tel" x-model="cfg.wa"></label>
+<label class="lbl" style="grid-column:1/-1">Endereço<input class="fld" type="text" x-model="cfg.addr"></label>
+<label class="lbl">Horário (Seg a Sáb)<input class="fld" type="text" x-model="cfg.hWeek"></label>
+<label class="lbl">Horário (Domingo)<input class="fld" type="text" x-model="cfg.hSun"></label>
+<label class="lbl">Valor do frete (R$)<input class="fld" type="text" inputmode="decimal" x-model="cfg.fee"></label>
+<label class="lbl">Frete grátis acima de (R$)<input class="fld" type="text" inputmode="decimal" x-model="cfg.free"></label>
+<label class="lbl" style="grid-column:1/-1">Bairros atendidos<input class="fld" type="text" x-model="cfg.areas"></label>
+</div>
+<div><button class="btn btn-blue" @click="say('Configurações salvas')">Salvar configurações</button></div>
+</div>
+</template>
+</main>
+</div>
+</template>
+
+<template x-if="toast">
+<div class="toast" role="status" style="position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#1C1C1A;color:#FFFFFF;padding:12px 20px;border-radius:999px;font-size:14px;font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,.25);z-index:40" x-text="toast"></div>
+</template>
+</body>
+</html>

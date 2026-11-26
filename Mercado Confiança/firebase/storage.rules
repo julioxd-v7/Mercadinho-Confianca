@@ -1,0 +1,25 @@
+rules_version = '2';
+
+// Confiança Mercadinho — regras do Storage (fotos de produtos e banners)
+// Qualquer um vê as fotos; só administradores enviam, trocam ou apagam.
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isAdmin() {
+      return request.auth != null
+        && firestore.exists(/databases/(default)/documents/admins/$(request.auth.uid));
+    }
+
+    match /fotos/{allPaths=**} {
+      allow read: if true;
+      allow write: if isAdmin()
+        && (request.resource == null
+            || (request.resource.size < 5 * 1024 * 1024                         // até 5 MB
+                && request.resource.contentType.matches('image/(jpeg|png|webp)')));
+    }
+
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

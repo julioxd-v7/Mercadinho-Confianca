@@ -1,0 +1,75 @@
+rules_version = '2';
+
+// Confiança Mercadinho — regras do Firestore
+// Site público: só lê o que deve aparecer. Painel ADM: só quem está em /admins escreve.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function isAdmin() {
+      return signedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    // Lista de administradores: você cria pelo console (passo 5 do guia).
+    match /admins/{uid} {
+      allow read: if signedIn() && request.auth.uid == uid;
+      allow write: if false;
+    }
+
+    // settings/store — nome, WhatsApp, endereço, horários, frete
+    match /settings/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /categories/{id} {
+      allow read: if true;
+      allow write: if isAdmin()
+        && request.resource.data.name is string && request.resource.data.name.size() > 0;
+    }
+
+    match /products/{id} {
+      // O site precisa buscar com where('visible', '==', true)
+      allow read: if resource.data.visible == true || isAdmin();
+      allow write: if isAdmin() && validProduct(request.resource.data);
+    }
+    function validProduct(d) {
+      return d.name is string && d.name.size() > 0
+        && d.categoryId is string
+        && d.price is number && d.price > 0
+        && d.unit in ['un', 'kg', 'pct', 'cx', 'L']
+        && d.visible is bool;
+    }
+
+    match /promotions/{id} {
+      // O site busca com where('status', '==', 'ativa') e confere as datas na tela
+      allow read: if resource.data.status == 'ativa' || isAdmin();
+      allow create, update: if isAdmin() && validPromo(request.resource.data);
+      allow delete: if isAdmin();
+    }
+    function validPromo(d) {
+      return d.productId is string
+        && d.oldPrice is number && d.promoPrice is number
+        && d.promoPrice > 0 && d.promoPrice < d.oldPrice          // preço promocional menor que o anterior
+        && d.startsAt is timestamp && d.endsAt is timestamp
+        && d.endsAt > d.startsAt                                  // data final depois da inicial
+        && d.type in ['Oferta do Dia', 'Encarte da Semana', 'Combo', 'Leve X Pague Y']
+        && d.status in ['ativa', 'rascunho', 'encerrada'];
+    }
+
+    match /banners/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Pedidos: só a loja vê e registra (o cliente pede pelo WhatsApp)
+    match /orders/{id} {
+      allow read, write: if isAdmin();
+    }
+
+    // Qualquer outra coleção fica fechada
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
